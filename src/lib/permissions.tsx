@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { recordAudit } from "./audit-log";
+import { api, setAuthToken } from "./api";
 
 export const MODULES = [
   "dashboard", "live-tracking",
@@ -120,7 +121,7 @@ type Ctx = {
   user: string;
   session: Session | null;
   ready: boolean;
-  signIn: (email: string, password: string) => { ok: boolean; error?: string };
+  signIn: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => void;
   setRole: (r: Role) => void;
   can: (m: Module, a?: Action) => boolean;
@@ -161,17 +162,49 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
     user,
     session,
     ready,
-    signIn: (email, password) => {
-      const match = DEMO_ACCOUNTS.find(
-        (a) => a.email.toLowerCase() === email.trim().toLowerCase(),
-      );
-      if (!match || match.password !== password) {
-        return { ok: false, error: "Incorrect email or password." };
+    signIn: async (email, password) => {
+      try {
+        const res = await api.auth.login(email.trim(), password);
+        if (res.success && res.data) {
+          const { user: apiUser, token } = res.data;
+          setAuthToken(token);
+
+          const roleName = apiUser.roles?.[0]?.name?.toLowerCase() || "";
+          let mappedRole: Role = "Admin";
+          if (roleName.includes("operat")) mappedRole = "Operations Manager";
+          else if (roleName.includes("supp")) mappedRole = "Support";
+          else if (roleName.includes("finan")) mappedRole = "Finance";
+          else if (roleName.includes("dispatch")) mappedRole = "Dispatcher";
+          else if (roleName.includes("market")) mappedRole = "Marketing";
+          else mappedRole = "Admin";
+
+          const newSession: Session = {
+            email: apiUser.email,
+            name: apiUser.name,
+            role: mappedRole,
+            title: mappedRole === "Admin" ? "Platform Administrator" : mappedRole,
+          };
+          persist(newSession);
+          return { ok: true };
+        }
+        return { ok: false, error: res.message || "Invalid credentials." };
+      } catch (err: any) {
+        // Fallback for offline demo accounts if API backend is not reachable
+        const match = DEMO_ACCOUNTS.find(
+          (a) => a.email.toLowerCase() === email.trim().toLowerCase(),
+        );
+        if (match && match.password === password) {
+          persist({ email: match.email, name: match.name, role: match.role, title: match.title });
+          return { ok: true };
+        }
+        return { ok: false, error: err?.message || "Invalid email or password." };
       }
-      persist({ email: match.email, name: match.name, role: match.role, title: match.title });
-      return { ok: true };
     },
-    signOut: () => persist(null),
+    signOut: () => {
+      api.auth.logout().catch(() => {});
+      setAuthToken(null);
+      persist(null);
+    },
     setRole: (r: Role) => {
       if (!session) return;
       persist({ ...session, role: r });

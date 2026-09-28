@@ -1,18 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, LogIn, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 import { toast } from "sonner";
-import { DEMO_ACCOUNTS, usePermissions } from "@/lib/permissions";
+import { usePermissions } from "@/lib/permissions";
 import { cn } from "@/lib/utils";
-import brandMark from "@/assets/hexidrop-mark.png.asset.json";
-
-
 
 export function LoginPage() {
   const { signIn, session, ready } = usePermissions();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@hexidrop.co.zw");
-  const [password, setPassword] = useState("hexidrop");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -21,18 +18,27 @@ export function LoginPage() {
     if (ready && session) navigate("/admin", { replace: true });
   }, [ready, session, navigate]);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
-    const res = signIn(email, password);
-    setBusy(false);
-    if (!res.ok) {
-      setError(res.error ?? "Sign in failed.");
+    if (!email || !password) {
+      setError("Please enter both email and password.");
       return;
     }
+    setBusy(true);
     setError(null);
-    toast.success("Welcome back to HexiDrop");
-    navigate("/admin", { replace: true });
+    try {
+      const res = await signIn(email, password);
+      if (!res.ok) {
+        setError(res.error ?? "Invalid email or password.");
+        return;
+      }
+      toast.success("Welcome back to HexiDrop");
+      navigate("/admin", { replace: true });
+    } catch (err: any) {
+      setError(err?.message ?? "An error occurred during sign in.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -153,32 +159,6 @@ export function LoginPage() {
               {busy ? "Signing in…" : "Sign in to console"}
             </button>
           </form>
-
-          <div className="mt-8 rounded-2xl border bg-card p-4">
-            <p className="flex items-center gap-2 text-xs font-semibold">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Demo accounts
-            </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              Password for every account: <span className="font-mono">hexidrop</span>
-            </p>
-            <ul className="mt-3 space-y-1">
-              {DEMO_ACCOUNTS.map((a) => (
-                <li key={a.email}>
-                  <button
-                    type="button"
-                    onClick={() => { setEmail(a.email); setPassword(a.password); setError(null); }}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-accent",
-                      email === a.email && "bg-primary/10 text-primary",
-                    )}
-                  >
-                    <span className="font-mono">{a.email}</span>
-                    <span className="ml-3 shrink-0 font-medium">{a.role}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </main>
     </div>
