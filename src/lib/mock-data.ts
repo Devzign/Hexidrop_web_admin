@@ -48,6 +48,9 @@ export type Order = {
   city: string;
   pickup: string;
   drop: string;
+  pickupCoords?: { lat: number; lng: number };
+  dropCoords?: { lat: number; lng: number };
+  driverCoords?: { lat: number; lng: number };
   status: OrderStatus;
   fare: number;
   distance: number;
@@ -56,17 +59,51 @@ export type Order = {
   payment: "Cash" | "Card" | "Wallet" | "EcoCash";
 };
 
+const SUBURB_KEYS = [
+  "Borrowdale", "Avondale", "Eastlea", "Mount Pleasant", "Belvedere",
+  "Southerton", "Highlands", "Newlands", "Harare CBD", "Msasa",
+  "Waterfalls", "Hatfield", "Greendale", "Marlborough", "Workington",
+];
+
+const SUBURB_COORDS: Record<string, { lat: number; lng: number }> = {
+  "Borrowdale": { lat: -17.7554, lng: 31.0852 },
+  "Avondale": { lat: -17.7951, lng: 31.0402 },
+  "Eastlea": { lat: -17.8252, lng: 31.0801 },
+  "Mount Pleasant": { lat: -17.7782, lng: 31.0451 },
+  "Belvedere": { lat: -17.8285, lng: 31.0205 },
+  "Southerton": { lat: -17.8601, lng: 31.0202 },
+  "Highlands": { lat: -17.7981, lng: 31.0954 },
+  "Newlands": { lat: -17.8102, lng: 31.0753 },
+  "Harare CBD": { lat: -17.8292, lng: 31.0522 },
+  "Msasa": { lat: -17.8420, lng: 31.1210 },
+  "Waterfalls": { lat: -17.8920, lng: 31.0410 },
+  "Hatfield": { lat: -17.8760, lng: 31.0820 },
+  "Greendale": { lat: -17.8190, lng: 31.1150 },
+  "Marlborough": { lat: -17.7490, lng: 31.0020 },
+  "Workington": { lat: -17.8480, lng: 31.0180 },
+};
+
 export const ORDERS: Order[] = Array.from({ length: 42 }).map((_, i) => {
   const status = pick(STATUSES, i + (i % 3));
   const city = pick(ZW_CITIES, i);
+  const pSub = SUBURB_KEYS[i % SUBURB_KEYS.length];
+  const dSub = SUBURB_KEYS[(i + 4) % SUBURB_KEYS.length];
+  const pCoord = SUBURB_COORDS[pSub] || { lat: -17.825, lng: 31.053 };
+  const dCoord = SUBURB_COORDS[dSub] || { lat: -17.795, lng: 31.040 };
+  const midLat = +((pCoord.lat + dCoord.lat) / 2 + (seedFloat(i, -0.005, 0.005))).toFixed(5);
+  const midLng = +((pCoord.lng + dCoord.lng) / 2 + (seedFloat(i + 1, -0.005, 0.005))).toFixed(5);
+
   return {
     id: `HXD-${(48213 + i).toString()}`,
     customer: pick(CUSTOMER_NAMES, i + 2),
     driver: pick(DRIVER_NAMES, i + 1),
     vehicle: pick(VEHICLES, i).type,
     city,
-    pickup: `${pick(["Avondale", "Borrowdale", "Msasa", "Belvedere", "Mount Pleasant", "Highfield"], i)}, ${city}`,
-    drop: `${pick(["Eastlea", "Waterfalls", "Hatfield", "Newlands", "Marlborough", "Greendale"], i + 3)}, ${city}`,
+    pickup: `${pSub}, ${city}`,
+    drop: `${dSub}, ${city}`,
+    pickupCoords: { lat: pCoord.lat, lng: pCoord.lng },
+    dropCoords: { lat: dCoord.lat, lng: dCoord.lng },
+    driverCoords: { lat: midLat, lng: midLng },
     status,
     fare: +seedFloat(i, 6, 380).toFixed(2),
     distance: +seedFloat(i + 7, 1.2, 42).toFixed(1),
@@ -109,21 +146,34 @@ export type Driver = {
   earnings: number;
   status: "Online" | "On Trip" | "Offline";
   verified: boolean;
+  lat: number;
+  lng: number;
+  currentSuburb: string;
 };
 
-export const DRIVERS: Driver[] = Array.from({ length: 24 }).map((_, i) => ({
-  id: `DRV-${1024 + i}`,
-  name: pick(DRIVER_NAMES, i),
-  phone: `+263 77${(2000000 + i * 1337).toString().slice(0, 7)}`,
-  city: pick(ZW_CITIES, i),
-  vehicle: pick(VEHICLES, i).type,
-  plate: pick(VEHICLES, i).plate,
-  rating: +(4 + seedFloat(i, 0, 0.99)).toFixed(2),
-  trips: Math.round(seedFloat(i + 2, 80, 1240)),
-  earnings: Math.round(seedFloat(i + 5, 320, 4800)),
-  status: (["Online", "On Trip", "Offline", "Online", "On Trip"] as const)[i % 5],
-  verified: i % 6 !== 0,
-}));
+export const DRIVERS: Driver[] = Array.from({ length: 24 }).map((_, i) => {
+  const sub = SUBURB_KEYS[i % SUBURB_KEYS.length];
+  const base = SUBURB_COORDS[sub] || { lat: -17.825, lng: 31.053 };
+  const lat = +(base.lat + seedFloat(i * 3, -0.012, 0.012)).toFixed(5);
+  const lng = +(base.lng + seedFloat(i * 3 + 1, -0.012, 0.012)).toFixed(5);
+
+  return {
+    id: `DRV-${1024 + i}`,
+    name: pick(DRIVER_NAMES, i),
+    phone: `+263 77${(2000000 + i * 1337).toString().slice(0, 7)}`,
+    city: "Harare",
+    vehicle: pick(VEHICLES, i).type,
+    plate: pick(VEHICLES, i).plate,
+    rating: +(4 + seedFloat(i, 0, 0.99)).toFixed(2),
+    trips: Math.round(seedFloat(i + 2, 80, 1240)),
+    earnings: Math.round(seedFloat(i + 5, 320, 4800)),
+    status: (["Online", "On Trip", "Offline", "Online", "On Trip"] as const)[i % 5],
+    verified: i % 6 !== 0,
+    lat,
+    lng,
+    currentSuburb: sub,
+  };
+});
 
 export type Customer = {
   id: string;

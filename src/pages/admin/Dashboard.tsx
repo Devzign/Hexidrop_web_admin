@@ -20,6 +20,9 @@ import {
   ORDERS, REVENUE_SERIES, VEHICLE_DISTRIBUTION, TOP_CITIES, DRIVERS, PAYMENTS,
   type Order, type Payment,
 } from "@/lib/mock-data";
+import { RealMap } from "@/components/maps/RealMap";
+import { useMapConfig } from "@/hooks/use-map-config";
+import { HARARE_CENTER } from "@/lib/geo-data";
 
 
 
@@ -289,54 +292,26 @@ function MiniStat({
 }
 
 function MiniMap() {
-  const pins = [
-    { top: "22%", left: "28%", status: "success" },
-    { top: "38%", left: "52%", status: "success" },
-    { top: "58%", left: "38%", status: "warning" },
-    { top: "48%", left: "72%", status: "success" },
-    { top: "68%", left: "62%", status: "info" },
-    { top: "30%", left: "78%", status: "success" },
-    { top: "72%", left: "20%", status: "destructive" },
-    { top: "18%", left: "60%", status: "info" },
-  ];
-  const bg = {
-    success: "bg-success", warning: "bg-warning",
-    destructive: "bg-destructive", info: "bg-info",
-  } as const;
+  const mapConfig = useMapConfig();
   return (
-    <div className="relative map-grid h-[380px] w-full overflow-hidden rounded-b-2xl">
-      {/* Roads */}
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <path d="M0 40 Q 30 30 50 45 T 100 50" stroke="var(--border)" strokeWidth="0.4" fill="none" />
-        <path d="M20 0 Q 30 50 40 100" stroke="var(--border)" strokeWidth="0.4" fill="none" />
-        <path d="M0 70 Q 50 65 100 75" stroke="var(--border)" strokeWidth="0.4" fill="none" />
-      </svg>
-      {pins.map((p, i) => (
-        <div key={i} className="absolute" style={{ top: p.top, left: p.left }}>
-          <span className={`absolute -inset-3 rounded-full ${bg[p.status as keyof typeof bg]}/25`} style={{ animation: "pulse-ring 2s ease-out infinite" }} />
-          <span className={`relative block h-3 w-3 rounded-full ring-2 ring-white ${bg[p.status as keyof typeof bg]}`} />
-        </div>
-      ))}
-      {/* Legend */}
-      <div className="absolute bottom-3 left-3 flex gap-2 rounded-xl border bg-card/90 px-3 py-2 shadow-card backdrop-blur">
-        <Legend2 color="bg-success" label="Available" />
-        <Legend2 color="bg-info" label="On trip" />
-        <Legend2 color="bg-warning" label="Idle" />
-        <Legend2 color="bg-destructive" label="Alert" />
-      </div>
-      <div className="absolute right-3 top-3 flex flex-col gap-1 rounded-xl border bg-card/90 p-1 shadow-card backdrop-blur">
-        <button className="flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold hover:bg-accent">+</button>
-        <button className="flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold hover:bg-accent">−</button>
+    <div className="relative">
+      <RealMap
+        config={mapConfig}
+        center={HARARE_CENTER}
+        zoom={12}
+        drivers={DRIVERS.slice(0, 16)}
+        height="380px"
+        showControls={false}
+      />
+      <div className="absolute top-3 right-3 z-[1000]">
+        <Link
+          to="/live-tracking"
+          className="rounded-xl border bg-card/95 px-3 py-1.5 text-xs font-bold text-foreground shadow-card backdrop-blur hover:bg-accent transition"
+        >
+          Expand Full Screen →
+        </Link>
       </div>
     </div>
-  );
-}
-
-function Legend2({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="flex items-center gap-1.5 text-[11px] font-medium">
-      <span className={`h-2 w-2 rounded-full ${color}`} /> {label}
-    </span>
   );
 }
 
