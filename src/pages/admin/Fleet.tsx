@@ -5,6 +5,7 @@ import { RowActions } from "@/components/admin/RowActions";
 import { RecordEditor, ConfirmDelete, type FieldDef } from "@/components/admin/RecordEditor";
 import { useCrud } from "@/hooks/use-crud";
 import { VEHICLES } from "@/lib/mock-data";
+import { VehicleThumb } from "@/components/public/VehicleIcon";
 
 
 
@@ -70,9 +71,12 @@ export function FleetPage() {
             return (
               <div key={v.type}>
                 <div className="mb-1.5 flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{v.type}</span>
-                    <span className="text-xs text-muted-foreground">up to {v.capacity}</span>
+                  <div className="flex items-center gap-3">
+                    <VehicleThumb type={v.type} className="h-8 w-11 rounded-lg bg-secondary/60 p-1 border border-border/40" />
+                    <div>
+                      <span className="font-semibold text-foreground">{v.type}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">up to {v.capacity}</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
                     <StatusBadge tone="success" label={`${[48, 62, 34, 21, 12, 6][i]} active`} />
@@ -92,7 +96,8 @@ export function FleetPage() {
         <ul className="grid gap-2 p-5 md:grid-cols-2">
           {crud.rows.map((m) => (
             <li key={m.id} className="flex items-center gap-3 rounded-xl border bg-secondary/30 px-4 py-3">
-              <div className="flex h-10 w-14 flex-col items-center justify-center rounded-lg bg-card">
+              <VehicleThumb type={m.vehicle} className="h-10 w-14 shrink-0 rounded-lg bg-card p-1 border border-border/50 shadow-sm" />
+              <div className="flex h-10 w-14 flex-col items-center justify-center rounded-lg bg-card border border-border/40">
                 <span className="text-[10px] uppercase text-muted-foreground">{m.date.split(" ")[0]}</span>
                 <span className="text-sm font-semibold">{m.date.split(" ")[1]}</span>
               </div>

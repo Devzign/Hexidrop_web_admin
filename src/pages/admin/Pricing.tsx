@@ -4,6 +4,7 @@ import { RowActions } from "@/components/admin/RowActions";
 import { RecordEditor, ConfirmDelete, type FieldDef } from "@/components/admin/RecordEditor";
 import { useCrud } from "@/hooks/use-crud";
 import { VEHICLES, ZW_CITIES } from "@/lib/mock-data";
+import { VehicleThumb } from "@/components/public/VehicleIcon";
 import { toast } from "sonner";
 
 
@@ -114,7 +115,12 @@ export function PricingPage() {
             <tbody className="divide-y divide-border/60">
               {rates.rows.map((v) => (
                 <tr key={v.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                  <td className="py-3 font-semibold text-foreground">{v.type}</td>
+                  <td className="py-3 font-semibold text-foreground">
+                    <div className="flex items-center gap-3">
+                      <VehicleThumb type={v.type} className="h-8 w-11 rounded-lg bg-secondary/60 p-1 border border-border/40" />
+                      <span>{v.type}</span>
+                    </div>
+                  </td>
                   <td className="py-3 text-right font-medium tabular-nums text-foreground">${v.base.toFixed(2)}</td>
                   <td className="py-3 text-right font-medium tabular-nums text-foreground">${v.perKm.toFixed(2)}</td>
                   <td className="py-3 text-right font-medium tabular-nums text-foreground">${v.perMin.toFixed(2)}</td>

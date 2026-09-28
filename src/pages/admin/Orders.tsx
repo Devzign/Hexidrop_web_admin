@@ -8,6 +8,7 @@ import { RowActions } from "@/components/admin/RowActions";
 import { RecordEditor, ConfirmDelete, type FieldDef } from "@/components/admin/RecordEditor";
 import { useCrud } from "@/hooks/use-crud";
 import { ORDERS, type Order } from "@/lib/mock-data";
+import { VehicleThumb } from "@/components/public/VehicleIcon";
 
 
 
@@ -75,7 +76,12 @@ export function OrdersPage() {
       </div>
     ) },
     { key: "driver", header: "Driver", render: (r) => <span className="text-[13px] font-medium text-foreground">{r.driver}</span> },
-    { key: "vehicle", header: "Vehicle", render: (r) => <StatusBadge label={r.vehicle} tone="muted" dot={false} /> },
+    { key: "vehicle", header: "Vehicle", render: (r) => (
+      <div className="flex items-center gap-2">
+        <VehicleThumb type={r.vehicle} className="h-6 w-9 shrink-0 rounded bg-secondary/50 p-0.5 border border-border/40" />
+        <span className="text-xs font-semibold text-foreground">{r.vehicle}</span>
+      </div>
+    ) },
     { key: "distance", header: "Distance", align: "right", render: (r) => <span className="text-xs font-medium tabular-nums text-slate-600 dark:text-slate-400">{r.distance} km</span> },
     { key: "fare", header: "Fare", align: "right", render: (r) => <span className="font-bold tabular-nums text-foreground">${r.fare.toFixed(2)}</span> },
     { key: "payment", header: "Payment", render: (r) => <StatusBadge label={r.payment} tone="muted" dot={false} /> },
