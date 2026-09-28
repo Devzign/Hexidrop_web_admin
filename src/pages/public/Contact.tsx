@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import heroFleet from "@/assets/hero-fleet.jpg";
+import iconOffice3D from "@/assets/3d/icon-office-3d.png";
 
 
 
@@ -204,8 +205,8 @@ function ContactSection() {
 
           <div className="mt-2 rounded-[28px] bg-brand-navy p-7 text-white shadow-elegant">
             <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-glow text-brand-navy">
-                <Briefcase className="h-6 w-6" />
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 p-2 shadow-sm backdrop-blur">
+                <img src={iconOffice3D} alt="Business" className="h-full w-full object-contain filter drop-shadow-sm" />
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest text-primary-glow">

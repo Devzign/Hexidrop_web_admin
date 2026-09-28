@@ -47,6 +47,21 @@ import vehiclePickup from "@/assets/vehicle-pickup.png";
 import vehicleLargeTruck from "@/assets/vehicle-large-truck.png";
 import { StoreBadge } from "@/components/public/StoreBadge";
 
+// 3D Realistic Icons
+import iconPickup3D from "@/assets/3d/icon-pickup-3d.png";
+import iconRadar3D from "@/assets/3d/radar-3d.png";
+import iconCoin3D from "@/assets/3d/gold-coin-3d.png";
+import iconCheck3D from "@/assets/3d/icon-check-3d.png";
+import iconMovers3D from "@/assets/3d/icon-movers-3d-clean.png";
+import iconShield3D from "@/assets/3d/icon-shield-3d.png";
+import iconBell3D from "@/assets/3d/icon-bell-3d.png";
+import iconSafe3D from "@/assets/3d/icon-safe-3d.png";
+import iconVan3D from "@/assets/3d/icon-summary-van.png";
+import iconParcel3D from "@/assets/3d/icon-parcel-3d-clean.png";
+import iconPacking3D from "@/assets/3d/icon-packing-3d.png";
+import iconOffice3D from "@/assets/3d/icon-office-3d.png";
+import iconStar3D from "@/assets/3d/icon-star-3d.png";
+
 
 
 export function Home() {
@@ -175,10 +190,10 @@ function Hero() {
           </div>
 
           {/* Floating cards */}
-          <div className="absolute -left-4 top-10 hidden rounded-2xl border border-border bg-white/90 p-4 pr-6 shadow-[0_20px_45px_-15px_oklch(0.35_0.1_155/0.35)] backdrop-blur-2xl md:block">
+          <div className="absolute -left-4 top-10 hidden rounded-2xl border border-border bg-white/95 p-3.5 pr-6 shadow-[0_20px_45px_-15px_oklch(0.35_0.1_155/0.35)] backdrop-blur-2xl md:block transition-all hover:scale-105">
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-primary text-primary-foreground">
-                <MapPin className="h-5 w-5" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 p-1.5 shadow-sm">
+                <img src={iconRadar3D} alt="Live GPS" className="h-full w-full object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)]" />
               </div>
               <div>
                 <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -191,10 +206,10 @@ function Hero() {
             </div>
           </div>
 
-          <div className="absolute -bottom-6 -right-2 hidden rounded-2xl border border-border bg-white/90 p-4 pr-6 shadow-[0_20px_45px_-15px_oklch(0.35_0.1_155/0.35)] backdrop-blur-2xl md:block">
+          <div className="absolute -bottom-6 -right-2 hidden rounded-2xl border border-border bg-white/95 p-3.5 pr-6 shadow-[0_20px_45px_-15px_oklch(0.35_0.1_155/0.35)] backdrop-blur-2xl md:block transition-all hover:scale-105">
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary-glow text-brand-navy">
-                <BadgeCheck className="h-5 w-5" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 p-1.5 shadow-sm">
+                <img src={iconCheck3D} alt="Verified driver" className="h-full w-full object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.12)]" />
               </div>
               <div>
                 <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -255,28 +270,28 @@ function Services() {
   const services = [
     {
       img: serviceParcel,
-      icon: Package,
+      icon3d: iconParcel3D,
       title: "Parcel Delivery",
       desc: "Documents, food, electronics — dispatched in minutes with door-to-door tracking.",
       features: ["3-minute pickup", "Live GPS", "Insured up to $200"],
     },
     {
       img: serviceMovers,
-      icon: Users,
+      icon3d: iconPacking3D,
       title: "Movers & Packers",
       desc: "Vetted, uniformed crews handle packing, loading and setup end-to-end.",
       features: ["Free packing materials", "Furniture wrapping", "Fixed quotes"],
     },
     {
       img: serviceBusiness,
-      icon: Briefcase,
+      icon3d: iconOffice3D,
       title: "Business Delivery",
       desc: "Corporate courier, fleet distribution and monthly invoicing for teams.",
       features: ["Dedicated account", "Bulk pricing", "API integrations"],
     },
     {
       img: serviceLarge,
-      icon: Boxes,
+      icon3d: iconVan3D,
       title: "Large Item Delivery",
       desc: "Furniture, appliances, construction materials — the right vehicle every time.",
       features: ["Pickup trucks & 5-ton", "Two-man crews", "Safe handling"],
@@ -306,8 +321,8 @@ function Services() {
                 height={960}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/70 via-brand-navy/10 to-transparent" />
-              <div className="absolute left-5 top-5 grid h-12 w-12 place-items-center rounded-2xl bg-white/95 text-primary shadow-elegant backdrop-blur">
-                <s.icon className="h-5 w-5" />
+              <div className="absolute left-5 top-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/95 p-2 shadow-elegant backdrop-blur transition-transform duration-300 group-hover:scale-110">
+                <img src={s.icon3d} alt={s.title} className="h-full w-full object-contain filter drop-shadow-sm" />
               </div>
               <h3 className="absolute bottom-5 left-5 right-5 text-2xl font-extrabold text-white">
                 {s.title}
@@ -342,15 +357,51 @@ function Services() {
 /* ============ WHY CHOOSE ============ */
 function WhyChoose() {
   const features = [
-    { icon: Clock, title: "Fast Pickup", body: "Median 3-minute arrival with nearest-driver dispatch." },
-    { icon: MapPin, title: "Live GPS Tracking", body: "Follow every kilometre in real time from pickup to drop." },
-    { icon: DollarSign, title: "Transparent Pricing", body: "See the total upfront. No surges, no hidden fees." },
-    { icon: BadgeCheck, title: "Verified Drivers", body: "Background-checked, uniformed, and rated by customers." },
-    { icon: Users, title: "Professional Movers", body: "Trained crews with packing, wrapping and setup." },
-    { icon: ShieldCheck, title: "Fully Insured", body: "Every job covered — parcels, appliances and full moves." },
-    { icon: Bell, title: "Real-time Notifications", body: "SMS and push updates at every step of the journey." },
-    { icon: Heart, title: "Safe Handling", body: "Padded blankets, straps and fragile-item protocols." },
-    { icon: Truck, title: "Door-to-Door", body: "Kerb-to-kitchen service, not just kerbside drop-offs." },
+    {
+      icon3d: iconPickup3D,
+      title: "Fast Pickup",
+      body: "Median 3-minute arrival with nearest-driver dispatch.",
+    },
+    {
+      icon3d: iconRadar3D,
+      title: "Live GPS Tracking",
+      body: "Follow every kilometre in real time from pickup to drop.",
+    },
+    {
+      icon3d: iconCoin3D,
+      title: "Transparent Pricing",
+      body: "See the total upfront. No surges, no hidden fees.",
+    },
+    {
+      icon3d: iconCheck3D,
+      title: "Verified Drivers",
+      body: "Background-checked, uniformed, and rated by customers.",
+    },
+    {
+      icon3d: iconMovers3D,
+      title: "Professional Movers",
+      body: "Trained crews with packing, wrapping and setup.",
+    },
+    {
+      icon3d: iconShield3D,
+      title: "Fully Insured",
+      body: "Every job covered — parcels, appliances and full moves.",
+    },
+    {
+      icon3d: iconBell3D,
+      title: "Real-time Notifications",
+      body: "SMS and push updates at every step of the journey.",
+    },
+    {
+      icon3d: iconSafe3D,
+      title: "Safe Handling",
+      body: "Padded blankets, straps and fragile-item protocols.",
+    },
+    {
+      icon3d: iconVan3D,
+      title: "Door-to-Door",
+      body: "Kerb-to-kitchen service, not just kerbside drop-offs.",
+    },
   ];
   return (
     <section className="bg-gradient-soft py-24">
@@ -364,13 +415,22 @@ function WhyChoose() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="group rounded-3xl border border-border bg-card p-7 shadow-card transition hover:-translate-y-1 hover:shadow-elegant"
+              className="group relative overflow-hidden rounded-3xl border border-border bg-card p-7 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-elegant hover:border-primary/40"
             >
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow transition-transform group-hover:scale-110">
-                <f.icon className="h-5 w-5" />
+              <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-2.5 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/15">
+                <img
+                  src={f.icon3d}
+                  alt={f.title}
+                  className="h-full w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] transition-transform duration-300 group-hover:rotate-3"
+                  loading="lazy"
+                />
               </div>
-              <h3 className="mt-5 text-lg font-bold text-foreground">{f.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{f.body}</p>
+              <h3 className="mt-5 text-lg font-bold text-foreground transition-colors group-hover:text-primary">
+                {f.title}
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {f.body}
+              </p>
             </div>
           ))}
         </div>
@@ -596,12 +656,12 @@ function MobileApp() {
 /* ============ JOURNEY ============ */
 function Journey() {
   const steps = [
-    { icon: Package, title: "Book Delivery", body: "Enter pickup & drop, pick a vehicle." },
-    { icon: Users, title: "Driver Assigned", body: "Nearest vetted driver accepts instantly." },
-    { icon: MapPin, title: "Live Tracking", body: "Watch your rider on the map in real time." },
-    { icon: Boxes, title: "Package Picked", body: "Photo confirmation at pickup." },
-    { icon: Truck, title: "Delivered", body: "Signed for at the door — proof of delivery." },
-    { icon: Star, title: "Rate the Trip", body: "Rate & tip your driver in one tap." },
+    { icon3d: iconParcel3D, title: "Book Delivery", body: "Enter pickup & drop, pick a vehicle." },
+    { icon3d: iconCheck3D, title: "Driver Assigned", body: "Nearest vetted driver accepts instantly." },
+    { icon3d: iconRadar3D, title: "Live Tracking", body: "Watch your rider on the map in real time." },
+    { icon3d: iconPacking3D, title: "Package Picked", body: "Photo confirmation at pickup." },
+    { icon3d: iconVan3D, title: "Delivered", body: "Signed for at the door — proof of delivery." },
+    { icon3d: iconStar3D, title: "Rate the Trip", body: "Rate & tip your driver in one tap." },
   ];
   return (
     <section className="bg-gradient-soft py-24">
@@ -612,12 +672,12 @@ function Journey() {
           body="A frictionless six-step journey — designed to feel effortless whether you're sending one parcel or moving an entire office."
         />
         <div className="relative mt-16">
-          <div className="pointer-events-none absolute left-0 right-0 top-6 hidden h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent md:block" />
+          <div className="pointer-events-none absolute left-0 right-0 top-8 hidden h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent md:block" />
           <div className="grid gap-8 md:grid-cols-6">
             {steps.map((s, i) => (
-              <div key={s.title} className="relative text-center">
-                <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow">
-                  <s.icon className="h-5 w-5" />
+              <div key={s.title} className="group relative text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-2.5 shadow-card transition-all duration-300 group-hover:scale-110 group-hover:shadow-glow">
+                  <img src={s.icon3d} alt={s.title} className="h-full w-full object-contain filter drop-shadow-sm" loading="lazy" />
                 </div>
                 <div className="mt-3 text-[11px] font-bold uppercase tracking-widest text-primary">
                   Step {i + 1}

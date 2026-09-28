@@ -20,14 +20,23 @@ import serviceLarge from "@/assets/service-large.jpg";
 import heroFleet from "@/assets/hero-fleet.jpg";
 import { VEHICLES, VehicleImage } from "@/components/hexi/VehicleIcon";
 
-
+// 3D Realistic Icons
+import iconPickup3D from "@/assets/3d/icon-pickup-3d.png";
+import iconRadar3D from "@/assets/3d/radar-3d.png";
+import iconCheck3D from "@/assets/3d/icon-check-3d.png";
+import iconShield3D from "@/assets/3d/icon-shield-3d.png";
+import iconBell3D from "@/assets/3d/icon-bell-3d.png";
+import iconVan3D from "@/assets/3d/icon-summary-van.png";
+import iconParcel3D from "@/assets/3d/icon-parcel-3d-clean.png";
+import iconPacking3D from "@/assets/3d/icon-packing-3d.png";
+import iconOffice3D from "@/assets/3d/icon-office-3d.png";
 
 const services = [
   {
     id: "parcel",
     image: serviceParcel,
     eyebrow: "On-demand",
-    icon: <Package className="h-5 w-5" />,
+    icon3d: iconParcel3D,
     title: "Parcel Delivery",
     body: "From a birthday cake to a laptop, a vetted rider is on the way in minutes. Follow every metre with live tracking and get photo proof at drop-off.",
     bullets: [
@@ -41,7 +50,7 @@ const services = [
     id: "movers",
     image: serviceMovers,
     eyebrow: "End-to-end",
-    icon: <Users className="h-5 w-5" />,
+    icon3d: iconPacking3D,
     title: "Movers & Packers",
     body: "A dedicated move manager, a uniformed crew and packing materials included. We move homes and offices with zero drama and zero scratches.",
     bullets: [
@@ -55,7 +64,7 @@ const services = [
     id: "business",
     image: serviceBusiness,
     eyebrow: "For business",
-    icon: <Building2 className="h-5 w-5" />,
+    icon3d: iconOffice3D,
     title: "Business Delivery",
     body: "Restaurants, retailers and clinics run their last mile on HexiDrop. Dedicated fleets, consolidated invoicing and analytics for your whole team.",
     bullets: [
@@ -69,7 +78,7 @@ const services = [
     id: "large",
     image: serviceLarge,
     eyebrow: "Heavy duty",
-    icon: <Sofa className="h-5 w-5" />,
+    icon3d: iconVan3D,
     title: "Large Item Delivery",
     body: "Furniture, appliances and construction materials handled by crews trained for weight. Lift loading, stairs and awkward doorways are all in a day's work.",
     bullets: [
@@ -164,8 +173,8 @@ export function Services() {
               </div>
               <div className="flex flex-1 flex-col gap-4 p-8">
                 <div className="flex items-center gap-3">
-                  <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow">
-                    {s.icon}
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 p-1.5 shadow-sm">
+                    <img src={s.icon3d} alt={s.title} className="h-full w-full object-contain filter drop-shadow-sm" />
                   </div>
                   <h3 className="text-2xl font-extrabold tracking-tight text-foreground">
                     {s.title}
@@ -284,22 +293,22 @@ export function Services() {
           </div>
           <div className="mt-14 grid gap-6 md:grid-cols-3">
             {[
-              { icon: <Clock className="h-5 w-5" />, t: "3-minute pickup", b: "Nearest-driver matching gets a rider to you fast." },
-              { icon: <ShieldCheck className="h-5 w-5" />, t: "Fully insured", b: "Every parcel and every move is covered." },
-              { icon: <Truck className="h-5 w-5" />, t: "Right vehicle", b: "Bike to 3T truck — never pay for space you don't use." },
-              { icon: <MapPin className="h-5 w-5" />, t: "Live tracking", b: "Share a tracking link with your customer in one tap." },
-              { icon: <BellRing className="h-5 w-5" />, t: "Real-time updates", b: "Notifications at pickup, in transit and drop-off." },
-              { icon: <BadgeCheck className="h-5 w-5" />, t: "Verified crews", b: "ID-checked, trained and rated after every job." },
+              { icon3d: iconPickup3D, t: "3-minute pickup", b: "Nearest-driver matching gets a rider to you fast." },
+              { icon3d: iconShield3D, t: "Fully insured", b: "Every parcel and every move is covered." },
+              { icon3d: iconVan3D, t: "Right vehicle", b: "Bike to 3T truck — never pay for space you don't use." },
+              { icon3d: iconRadar3D, t: "Live tracking", b: "Share a tracking link with your customer in one tap." },
+              { icon3d: iconBell3D, t: "Real-time updates", b: "Notifications at pickup, in transit and drop-off." },
+              { icon3d: iconCheck3D, t: "Verified crews", b: "ID-checked, trained and rated after every job." },
             ].map((f) => (
               <div
                 key={f.t}
-                className="rounded-3xl border border-border bg-card p-7 shadow-card transition hover:-translate-y-1 hover:shadow-elegant"
+                className="group relative overflow-hidden rounded-3xl border border-border bg-card p-7 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-elegant hover:border-primary/40"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow">
-                  {f.icon}
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-2.5 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/15">
+                  <img src={f.icon3d} alt={f.t} className="h-full w-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] transition-transform duration-300 group-hover:rotate-3" loading="lazy" />
                 </div>
-                <div className="mt-5 text-lg font-bold text-foreground">{f.t}</div>
-                <p className="mt-2 text-sm text-muted-foreground">{f.b}</p>
+                <div className="mt-5 text-lg font-bold text-foreground transition-colors group-hover:text-primary">{f.t}</div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.b}</p>
               </div>
             ))}
           </div>
