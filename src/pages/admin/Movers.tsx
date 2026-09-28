@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PageHeader, SectionCard } from "@/components/admin/PageHeader";
 import { DataTable, type Column } from "@/components/admin/DataTable";
@@ -6,7 +7,11 @@ import { RowActions } from "@/components/admin/RowActions";
 import { RecordEditor, ConfirmDelete, type FieldDef } from "@/components/admin/RecordEditor";
 import { useCrud } from "@/hooks/use-crud";
 import { MOVING_JOBS, MOVER_TEAMS, type MovingJob } from "@/lib/mock-data";
-import { PackageCheck, Boxes, Home, Building2, Camera, ClipboardCheck } from "lucide-react";
+import {
+  PackageCheck, Boxes, Home, Building2, Camera, ClipboardCheck,
+  Eye, X, Truck, Phone, MapPin, Users, Calendar, ShieldCheck, DollarSign
+} from "lucide-react";
+import { toast } from "sonner";
 
 const MOVER_FIELDS: FieldDef<MovingJob>[] = [
   { name: "customer", label: "Customer" },
@@ -20,12 +25,21 @@ const MOVER_FIELDS: FieldDef<MovingJob>[] = [
   { name: "status", label: "Status", type: "select", options: ["Scheduled", "In Progress", "Packing", "Delivered", "Confirmed"] },
 ];
 
-
-
 export function MoversPage() {
   const crud = useCrud<MovingJob>(MOVING_JOBS, "Moving job");
+  const [openJob, setOpenJob] = useState<MovingJob | null>(null);
+
   const columns: Column<MovingJob>[] = [
-    { key: "id", header: "Job", render: (r) => <span className="font-mono text-[13px] font-semibold">{r.id}</span> },
+    { key: "id", header: "Job", render: (r) => (
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpenJob(r); }}
+        className="group/id inline-flex items-center gap-1.5 font-mono text-xs font-bold text-primary hover:underline cursor-pointer"
+        title="View moving job details"
+      >
+        <span>{r.id}</span>
+        <Eye className="h-3 w-3 opacity-60 group-hover/id:opacity-100 transition-opacity" />
+      </button>
+    ) },
     { key: "customer", header: "Customer" },
     { key: "team", header: "Team", render: (r) => <StatusBadge tone="primary" label={r.team} dot={false} /> },
     { key: "type", header: "Type", render: (r) => <StatusBadge tone="muted" label={r.type} dot={false} /> },
@@ -48,6 +62,7 @@ export function MoversPage() {
     { key: "status", header: "Status", render: (r) => <OrderStatusBadge status={r.status} /> },
     { key: "actions", header: "", render: (r) => (
       <RowActions
+        onView={() => setOpenJob(r)}
         onEdit={() => crud.openEdit(r)}
         onDuplicate={() => crud.duplicate(r)}
         onDelete={() => crud.openDelete(r)}
@@ -123,8 +138,16 @@ export function MoversPage() {
       </div>
 
       <SectionCard title="Moving jobs" subtitle={`${crud.rows.length} scheduled or in progress`} padding="none">
-        <DataTable columns={columns} rows={crud.rows} />
+        <DataTable columns={columns} rows={crud.rows} onRowClick={(row) => setOpenJob(row as MovingJob)} />
       </SectionCard>
+
+      {/* Moving Job Details Drawer */}
+      {openJob && (
+        <MoverJobDrawer
+          job={openJob}
+          onClose={() => setOpenJob(null)}
+        />
+      )}
 
       <RecordEditor<MovingJob>
         open={!!crud.editing}
@@ -155,6 +178,152 @@ export function MoversPage() {
         title="Cancel moving job?"
         description={crud.deleting ? `${crud.deleting.id} will be cancelled and removed.` : ""}
       />
+    </div>
+  );
+}
+
+function MoverJobDrawer({ job, onClose }: { job: MovingJob; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" />
+      <aside
+        className="relative flex h-full w-full max-w-[580px] flex-col overflow-hidden bg-card shadow-elegant border-l animate-in slide-in-from-right duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 border-b px-6 py-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-primary text-base font-bold text-primary-foreground shadow-sm">
+              <Boxes className="h-6 w-6" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-foreground">{job.id}</h3>
+                <OrderStatusBadge status={job.status} />
+              </div>
+              <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">{job.type}</span>
+                <span>•</span>
+                <span>{job.date}</span>
+                <span>•</span>
+                <span className="font-semibold text-primary">{job.team}</span>
+              </div>
+            </div>
+          </div>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg border hover:bg-accent text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-xl bg-secondary/50 p-3">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Job Price</div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-foreground">${job.price.toLocaleString()}</div>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Crew Allocated</div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-foreground">{job.crew} Packers</div>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Est. Duration</div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-primary font-semibold">5 - 7 Hours</div>
+            </div>
+          </div>
+
+          {/* Customer & Team Info */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border p-4">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Customer</div>
+              <div className="mt-1.5 text-sm font-bold text-foreground">{job.customer}</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">+263 77 241 8902</div>
+              <div className="mt-2 text-[11px] text-muted-foreground font-medium">Zimbabwe Residential Move</div>
+            </div>
+            <div className="rounded-xl border p-4">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Dedicated Crew</div>
+              <div className="mt-1.5 text-sm font-bold text-foreground">{job.team}</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">Lead: Tinashe Chitepo</div>
+              <div className="mt-2 flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                <ShieldCheck className="h-3 w-3" /> Insured & Vetted
+              </div>
+            </div>
+          </div>
+
+          {/* Relocation Route */}
+          <div className="rounded-xl border p-4 space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relocation Route</div>
+            <div className="space-y-3 text-xs">
+              <div className="flex items-start gap-2.5">
+                <span className="mt-0.5 h-3 w-3 rounded-full bg-primary shrink-0 ring-4 ring-primary/10" />
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-muted-foreground">Origin (Pickup)</div>
+                  <div className="text-sm font-semibold text-foreground">{job.from}</div>
+                </div>
+              </div>
+              <div className="ml-1.5 h-4 border-l-2 border-dashed border-border" />
+              <div className="flex items-start gap-2.5">
+                <span className="mt-0.5 h-3 w-3 rounded-full bg-destructive shrink-0 ring-4 ring-destructive/10" />
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-muted-foreground">Destination (Dropoff)</div>
+                  <div className="text-sm font-semibold text-foreground">{job.to}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Move Checklist Status */}
+          <div className="rounded-xl border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Service Checklist</div>
+              <span className="text-xs font-semibold text-foreground">3 of 5 Steps Complete</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              {[
+                { title: "Pre-move Survey & Inventory Assessment", done: true },
+                { title: "Packaging Material Delivery (Boxes, Bubble Wrap)", done: true },
+                { title: "Furniture Dismantling & Protected Loading", done: true },
+                { title: "Direct Transit to Destination Address", done: job.status === "In Progress" || job.status === "Delivered" },
+                { title: "Reassembly, Placement & Final Client Sign-off", done: job.status === "Delivered" },
+              ].map((step, idx) => (
+                <div key={idx} className="flex items-center gap-2.5 rounded-lg bg-secondary/30 px-3 py-2 border border-border/40">
+                  <span className={`flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-bold ${
+                    step.done ? "bg-emerald-600 text-white" : "border bg-card text-muted-foreground"
+                  }`}>
+                    {step.done ? "✓" : idx + 1}
+                  </span>
+                  <span className={`flex-1 font-medium ${step.done ? "text-foreground" : "text-muted-foreground"}`}>
+                    {step.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex gap-2 border-t px-6 py-4 bg-muted/20">
+          <button
+            onClick={() => {
+              toast.info(`Calling team supervisor for ${job.id}`);
+            }}
+            className="h-9 flex-1 inline-flex items-center justify-center gap-2 rounded-xl border bg-card text-sm font-semibold hover:bg-accent text-foreground"
+          >
+            <Phone className="h-4 w-4 text-emerald-600" />
+            Call crew lead
+          </button>
+          <button
+            onClick={() => {
+              toast.success(`Tracking coordinates refreshed for ${job.team}`);
+            }}
+            className="h-9 flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-primary text-sm font-semibold text-primary-foreground shadow-sm"
+          >
+            <Truck className="h-4 w-4" />
+            Track moving truck
+          </button>
+        </div>
+      </aside>
     </div>
   );
 }

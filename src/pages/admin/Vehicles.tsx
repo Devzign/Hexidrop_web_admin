@@ -33,6 +33,13 @@ import {
   Filter,
   RotateCcw,
   SlidersHorizontal,
+  Eye,
+  Phone,
+  ShieldCheck,
+  FileText,
+  Calendar,
+  Wrench,
+  Truck,
 } from "lucide-react";
 
 type Row = {
@@ -70,6 +77,9 @@ export function VehiclesPage() {
   const [q, setQ] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("All");
   const [statusFilter, setStatusFilter] = useState<string>("All");
+
+  // Details Drawer State
+  const [openVehicle, setOpenVehicle] = useState<Row | null>(null);
 
   // Dialog State
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -158,7 +168,14 @@ export function VehiclesPage() {
       key: "id",
       header: "ID",
       render: (r) => (
-        <span className="font-semibold text-xs tracking-tight text-foreground">{r.id}</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); setOpenVehicle(r); }}
+          className="group/id inline-flex items-center gap-1.5 font-mono text-xs font-bold text-primary hover:underline cursor-pointer"
+          title="View vehicle specifications"
+        >
+          <span>{r.id}</span>
+          <Eye className="h-3 w-3 opacity-60 group-hover/id:opacity-100 transition-opacity" />
+        </button>
       ),
     },
     {
@@ -219,6 +236,7 @@ export function VehiclesPage() {
       header: "",
       render: (r) => (
         <RowActions
+          onView={() => setOpenVehicle(r)}
           onEdit={() => handleOpenEdit(r)}
           onDuplicate={() => crud.duplicate(r)}
           onDelete={() => crud.openDelete(r)}
@@ -422,7 +440,7 @@ export function VehiclesPage() {
 
         {/* Data Table or Empty Filter State */}
         {filteredRows.length > 0 ? (
-          <DataTable columns={columns} rows={filteredRows} />
+          <DataTable columns={columns} rows={filteredRows} onRowClick={(row) => setOpenVehicle(row as Row)} />
         ) : (
           <div className="py-14 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/80 text-muted-foreground">
@@ -678,6 +696,183 @@ export function VehiclesPage() {
             : ""
         }
       />
+
+      {/* Vehicle Details Drawer */}
+      {openVehicle && (
+        <VehicleDrawer
+          vehicle={openVehicle}
+          onClose={() => setOpenVehicle(null)}
+          onEdit={() => {
+            const v = openVehicle;
+            setOpenVehicle(null);
+            handleOpenEdit(v);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function VehicleDrawer({
+  vehicle,
+  onClose,
+  onEdit,
+}: {
+  vehicle: Row;
+  onClose: () => void;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" />
+      <aside
+        className="relative flex h-full w-full max-w-[560px] flex-col overflow-hidden bg-card shadow-elegant border-l animate-in slide-in-from-right duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 border-b px-6 py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-18 shrink-0 items-center justify-center rounded-2xl bg-secondary/60 border border-border/50 p-2 shadow-sm">
+              <img
+                src={getVehicleImage(vehicle.type)}
+                alt={vehicle.type}
+                className="h-full w-full object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]"
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-foreground">{vehicle.type}</h3>
+                <StatusBadge
+                  tone={vehicle.status === "Active" ? "success" : vehicle.status === "Maintenance" ? "warning" : "muted"}
+                  label={vehicle.status}
+                />
+              </div>
+              <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-mono font-bold text-foreground bg-secondary px-1.5 py-0.5 rounded border border-border/40">
+                  {vehicle.plate}
+                </span>
+                <span>•</span>
+                <span className="font-mono">{vehicle.id}</span>
+                <span>•</span>
+                <span>Capacity: {vehicle.capacity}</span>
+              </div>
+            </div>
+          </div>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg border hover:bg-accent text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-xl bg-secondary/50 p-3">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Load Capacity</div>
+              <div className="mt-1 text-base font-bold tabular-nums text-foreground">{vehicle.capacity}</div>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Insurance Valid</div>
+              <div className="mt-1 text-sm font-bold tabular-nums text-foreground">{vehicle.insurance}</div>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Next Service</div>
+              <div className="mt-1 text-sm font-bold tabular-nums text-amber-600 dark:text-amber-400 font-semibold">{vehicle.nextService}</div>
+            </div>
+          </div>
+
+          {/* Assigned Driver Card */}
+          <div className="rounded-xl border p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Assigned Operator</div>
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Active Duty
+              </span>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-primary text-sm font-bold text-primary-foreground shadow-sm">
+                {vehicle.driver.split(" ").map((s) => s[0]).join("").slice(0, 2)}
+              </span>
+              <div className="flex-1 leading-tight">
+                <div className="text-sm font-bold text-foreground">{vehicle.driver}</div>
+                <div className="mt-0.5 text-xs text-muted-foreground">+263 77 500 8129</div>
+              </div>
+              <a
+                href="tel:+263775008129"
+                className="flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold text-foreground hover:bg-accent"
+              >
+                <Phone className="h-3.5 w-3.5 text-emerald-600" /> Call
+              </a>
+            </div>
+          </div>
+
+          {/* Vehicle Compliance & Statutory (Zimbabwe) */}
+          <div className="rounded-xl border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Statutory & Licensing (Zimbabwe)</div>
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <ShieldCheck className="h-3.5 w-3.5" /> Compliant
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              {[
+                { name: "ZTSA Certificate of Roadworthiness", status: "Valid", expiry: "31 Dec 2026" },
+                { name: "Vehicle Third-Party / Comprehensive Insurance", status: "Active", expiry: vehicle.insurance },
+                { name: "ZINARA Vehicle Licence Disc", status: "Current", expiry: "31 Oct 2026" },
+                { name: "ZBC Radio Licence", status: "Paid", expiry: "Annual" },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between rounded-lg bg-secondary/30 px-3 py-2 border border-border/40">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="font-medium text-foreground">{item.name}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-semibold text-foreground">{item.expiry}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Maintenance & Service History */}
+          <div className="rounded-xl border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Service History</div>
+              <span className="text-xs text-muted-foreground font-mono">Service ID #SRV-104</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between rounded-lg bg-secondary/30 p-2.5 border border-border/40">
+                <div className="flex items-center gap-2">
+                  <Wrench className="h-4 w-4 text-primary" />
+                  <div>
+                    <div className="font-semibold text-foreground">Standard 15,000 km Service</div>
+                    <div className="text-[11px] text-muted-foreground">Engine oil, filters, brake pads check</div>
+                  </div>
+                </div>
+                <StatusBadge tone="success" label="Passed" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex gap-2 border-t px-6 py-4 bg-muted/20">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="flex-1 rounded-xl text-xs font-semibold"
+          >
+            Close
+          </Button>
+          <Button
+            onClick={onEdit}
+            className="flex-1 rounded-xl bg-gradient-primary text-xs font-semibold text-primary-foreground"
+          >
+            Edit Vehicle
+          </Button>
+        </div>
+      </aside>
     </div>
   );
 }

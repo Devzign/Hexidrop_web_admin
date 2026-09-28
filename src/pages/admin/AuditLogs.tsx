@@ -1,6 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { ShieldCheck, ShieldX, Filter } from "lucide-react";
+import { ShieldCheck, ShieldX, Filter, Eye, X } from "lucide-react";
 import { PageHeader, SectionCard } from "@/components/admin/PageHeader";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { ExportButton } from "@/components/admin/ExportButton";
@@ -8,8 +7,6 @@ import { subscribeAudit, clearAudit, formatRelativeTime, type AuditEntry } from 
 import { ROLES } from "@/lib/permissions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-
 
 const LOGINS = [
   { u: "Kudzai Moyo", ip: "196.4.72.14", loc: "Harare, ZW", device: "Chrome · macOS", ok: true, t: "Today 07:22" },
@@ -20,6 +17,7 @@ const LOGINS = [
 
 export function AuditLogsPage() {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
+  const [openEntry, setOpenEntry] = useState<AuditEntry | null>(null);
   const [outcome, setOutcome] = useState<"all" | "allowed" | "denied">("all");
   const [roleFilter, setRoleFilter] = useState<"all" | (typeof ROLES)[number]>("all");
   const [, forceTick] = useState(0);
@@ -133,9 +131,17 @@ export function AuditLogsPage() {
               </thead>
               <tbody>
                 {filtered.map((e) => (
-                  <tr key={e.id} className="border-b border-border/70 last:border-b-0 hover:bg-slate-50/70 dark:hover:bg-slate-800/40" data-testid="audit-row">
+                  <tr
+                    key={e.id}
+                    onClick={() => setOpenEntry(e)}
+                    className="border-b border-border/70 last:border-b-0 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 cursor-pointer transition-colors"
+                    data-testid="audit-row"
+                  >
                     <td className="px-4 py-2.5 text-xs font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">{formatRelativeTime(e.ts)}</td>
-                    <td className="px-4 py-2.5 font-semibold text-foreground">{e.user}</td>
+                    <td className="px-4 py-2.5 font-semibold text-foreground flex items-center gap-1.5">
+                      <span>{e.user}</span>
+                      <Eye className="h-3 w-3 text-primary opacity-60" />
+                    </td>
                     <td className="px-4 py-2.5"><StatusBadge tone="muted" label={e.role} dot={false} /></td>
                     <td className="px-4 py-2.5 font-semibold text-xs text-foreground">{e.module}</td>
                     <td className="px-4 py-2.5 text-xs font-semibold capitalize text-foreground">{e.action}</td>
@@ -182,6 +188,94 @@ export function AuditLogsPage() {
           </table>
         </div>
       </SectionCard>
+
+      {/* Audit Entry Details Drawer */}
+      {openEntry && (
+        <AuditDrawer
+          entry={openEntry}
+          onClose={() => setOpenEntry(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function AuditDrawer({ entry, onClose }: { entry: AuditEntry; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" />
+      <aside
+        className="relative flex h-full w-full max-w-[540px] flex-col overflow-hidden bg-card shadow-elegant border-l animate-in slide-in-from-right duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b px-6 py-5">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm font-bold text-foreground">{entry.id}</span>
+              <StatusBadge
+                tone={entry.outcome === "allowed" ? "success" : "destructive"}
+                label={entry.outcome}
+              />
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              Recorded {new Date(entry.ts).toLocaleString()}
+            </div>
+          </div>
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg border hover:bg-accent text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+          <div className="rounded-xl border p-4 space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Security Principal</div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <span className="text-muted-foreground">Operator / User:</span>
+                <div className="mt-0.5 font-bold text-foreground">{entry.user}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Assigned Role:</span>
+                <div className="mt-0.5 font-semibold text-foreground">{entry.role}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Target Module:</span>
+                <div className="mt-0.5 font-semibold text-foreground">{entry.module}</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Action Attempted:</span>
+                <div className="mt-0.5 font-bold uppercase text-foreground">{entry.action}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border p-4 space-y-2">
+            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Route & Path</div>
+            <div className="font-mono text-xs bg-secondary/50 p-2.5 rounded-lg border border-border/40 text-foreground">
+              {entry.route}
+            </div>
+          </div>
+
+          <div className="rounded-xl border p-4 space-y-2">
+            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Audit Raw Payload</div>
+            <pre className="p-3 rounded-lg bg-secondary/40 font-mono text-[11px] text-foreground overflow-x-auto border border-border/40">
+              {JSON.stringify(entry, null, 2)}
+            </pre>
+          </div>
+        </div>
+
+        <div className="border-t px-6 py-4 bg-muted/20">
+          <button
+            onClick={() => {
+              navigator.clipboard?.writeText(JSON.stringify(entry, null, 2));
+              toast.success("Event details copied to clipboard");
+            }}
+            className="w-full h-9 rounded-xl border bg-card text-xs font-semibold hover:bg-accent text-foreground"
+          >
+            Copy Trace JSON
+          </button>
+        </div>
+      </aside>
     </div>
   );
 }

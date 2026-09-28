@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
-import { Filter, Download, Search, X } from "lucide-react";
+import { Filter, Download, Search, X, Eye } from "lucide-react";
 import { PageHeader, SectionCard } from "@/components/admin/PageHeader";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { OrderStatusBadge, StatusBadge } from "@/components/admin/StatusBadge";
@@ -51,7 +51,16 @@ export function OrdersPage() {
   }, [crud.rows]);
 
   const columns: Column<Order>[] = [
-    { key: "id", header: "Order", render: (r) => <span className="font-semibold text-xs tracking-tight text-foreground">{r.id}</span> },
+    { key: "id", header: "Order", render: (r) => (
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpenOrder(r); }}
+        className="group/id inline-flex items-center gap-1.5 font-mono text-xs font-bold text-primary hover:underline cursor-pointer"
+        title="View order details"
+      >
+        <span>{r.id}</span>
+        <Eye className="h-3 w-3 opacity-60 group-hover/id:opacity-100 transition-opacity" />
+      </button>
+    ) },
     { key: "customer", header: "Customer", render: (r) => (
       <div className="flex items-center gap-2.5">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xs font-semibold text-foreground">
