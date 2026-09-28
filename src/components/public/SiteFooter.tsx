@@ -1,20 +1,21 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Clock, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { HexiLogo } from "./Logo";
+import { StoreBadge } from "./StoreBadge";
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-brand-navy text-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 md:grid-cols-12 md:px-8">
         <div className="space-y-5 md:col-span-4">
-          <HexiLogo size={44} />
+          <HexiLogo size={44} inverted />
           <p className="max-w-xs text-sm text-white/70">
             Zimbabwe's on-demand delivery & moving network. Bikes, vans, trucks
             and full moving crews — one app, one platform.
           </p>
-          <div className="flex flex-col gap-2 pt-2">
-            <StoreMini store="apple" />
-            <StoreMini store="google" />
+          <div className="flex flex-col sm:flex-row md:flex-col items-start gap-2.5 pt-2">
+            <StoreBadge store="apple" />
+            <StoreBadge store="google" />
           </div>
           <div className="flex gap-3 pt-2">
             {[Facebook, Instagram, Twitter, Linkedin].map((Icon, i) => (
@@ -112,32 +113,6 @@ function FooterCol({
         ))}
       </ul>
     </div>
-  );
-}
-
-function StoreMini({ store }: { store: "apple" | "google" }) {
-  const isApple = store === "apple";
-  return (
-    <a
-      href="#"
-      className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-xs text-white/90 backdrop-blur transition hover:bg-white/10"
-    >
-      {isApple ? (
-        <svg viewBox="0 0 384 512" className="h-5 w-5 fill-white">
-          <path d="M318.7 268c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-92.6zM248.5 82.5c22.2-26.4 20.2-50.4 19.6-59.1-19.7 1.1-42.5 13.4-55.5 28.5-14.3 16.2-22.7 36.2-20.9 58.7 21.3 1.6 40.7-9.4 56.8-28.1z" />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 512 512" className="h-5 w-5">
-          <path fill="#EA4335" d="M325.3 234.3L104.6 13l280.8 161.2z" />
-          <path fill="#FBBC04" d="M104.6 499l220.7-221.3-58-58.4L104.6 13z" />
-          <path fill="#4285F4" d="M480.6 232L385.4 174.2 325.3 234.3l60.1 60.1 95.2-57.8c19.2-11.6 19.2-32.6 0-44.2z" />
-          <path fill="#34A853" d="M104.6 499l280.8-161.2-60.1-60.1z" />
-        </svg>
-      )}
-      <span className="font-semibold">
-        {isApple ? "App Store" : "Google Play"}
-      </span>
-    </a>
   );
 }
 

@@ -45,6 +45,7 @@ import vehicleVan from "@/assets/vehicle-van.png";
 import vehicleMiniTruck from "@/assets/vehicle-mini-truck.png";
 import vehiclePickup from "@/assets/vehicle-pickup.png";
 import vehicleLargeTruck from "@/assets/vehicle-large-truck.png";
+import { StoreBadge } from "@/components/public/StoreBadge";
 
 
 
@@ -212,37 +213,6 @@ function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-background" />
     </section>
 
-  );
-}
-
-function StoreBadge({ store }: { store: "apple" | "google" }) {
-  const isApple = store === "apple";
-  return (
-    <a
-      href="#"
-      className="group inline-flex items-center gap-3 rounded-2xl border border-white/25 bg-black/40 px-5 py-3 backdrop-blur transition hover:bg-black/55"
-    >
-      {isApple ? (
-        <svg viewBox="0 0 384 512" className="h-7 w-7 fill-white">
-          <path d="M318.7 268c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-92.6zM248.5 82.5c22.2-26.4 20.2-50.4 19.6-59.1-19.7 1.1-42.5 13.4-55.5 28.5-14.3 16.2-22.7 36.2-20.9 58.7 21.3 1.6 40.7-9.4 56.8-28.1z" />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 512 512" className="h-7 w-7">
-          <path fill="#EA4335" d="M325.3 234.3L104.6 13l280.8 161.2z" />
-          <path fill="#FBBC04" d="M104.6 499l220.7-221.3-58-58.4L104.6 13z" />
-          <path fill="#4285F4" d="M480.6 232L385.4 174.2 325.3 234.3l60.1 60.1 95.2-57.8c19.2-11.6 19.2-32.6 0-44.2z" />
-          <path fill="#34A853" d="M104.6 499l280.8-161.2-60.1-60.1z" />
-        </svg>
-      )}
-      <div className="text-left">
-        <div className="text-[10px] font-medium uppercase tracking-wider text-white/70">
-          {isApple ? "Download on the" : "Get it on"}
-        </div>
-        <div className="text-sm font-bold text-white">
-          {isApple ? "App Store" : "Google Play"}
-        </div>
-      </div>
-    </a>
   );
 }
 

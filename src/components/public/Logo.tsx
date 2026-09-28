@@ -8,11 +8,13 @@ export function HexiLogo({
   size = 40,
   showWord = true,
   layout = "horizontal",
+  inverted = false,
 }: {
   className?: string;
   size?: number;
   showWord?: boolean;
   layout?: "horizontal" | "stacked";
+  inverted?: boolean;
 }) {
   return (
     <div className={cn("flex items-center gap-2.5 select-none", className)}>
@@ -30,9 +32,9 @@ export function HexiLogo({
         <span className="flex flex-col leading-tight">
           <span className="font-extrabold tracking-tight" style={{ fontSize: Math.max(16, Math.round(size * 0.45)) }}>
             <span className="text-primary">HEXI</span>
-            <span className="text-brand-navy dark:text-foreground">DROP</span>
+            <span className={inverted ? "text-white" : "text-brand-navy dark:text-foreground"}>DROP</span>
           </span>
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground -mt-0.5">
+          <span className={cn("text-[10px] font-semibold uppercase tracking-wider -mt-0.5", inverted ? "text-white/70" : "text-muted-foreground")}>
             Logistics & Moving
           </span>
         </span>
