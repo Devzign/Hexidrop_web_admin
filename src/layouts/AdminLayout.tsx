@@ -34,13 +34,22 @@ const ROUTE_MODULE: Record<string, Module> = {
   "/admin/profile": "profile",
 };
 
+function getModuleForRoute(pathname: string): Module | undefined {
+  if (ROUTE_MODULE[pathname]) return ROUTE_MODULE[pathname];
+  if (pathname.startsWith("/admin/drivers")) return "drivers";
+  if (pathname.startsWith("/admin/orders")) return "orders";
+  if (pathname.startsWith("/admin/customers")) return "customers";
+  if (pathname.startsWith("/admin/vehicles")) return "vehicles";
+  return undefined;
+}
+
 export function AdminLayout({ children }: { children?: ReactNode }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { can, role, user, session, ready } = usePermissions();
 
   const isLogin = pathname === "/admin/login";
-  const module = ROUTE_MODULE[pathname];
+  const module = getModuleForRoute(pathname);
   const allowed = !module || can(module, "view");
 
   useEffect(() => {

@@ -138,8 +138,14 @@ export type Driver = {
   id: string;
   name: string;
   phone: string;
+  email?: string;
   city: string;
+  address?: string;
   vehicle: string;
+  vehicleType?: string;
+  vehicleModel?: string;
+  vehicleYear?: string;
+  vehicleColor?: string;
   plate: string;
   rating: number;
   trips: number;
@@ -149,6 +155,48 @@ export type Driver = {
   lat: number;
   lng: number;
   currentSuburb: string;
+  avatar?: string;
+  driverPhoto?: string;
+  nationalId?: string;
+  nationalIdPhoto?: string;
+  licenseNumber?: string;
+  licenseClass?: string;
+  licensePhoto?: string;
+  ztsaCertificatePhoto?: string;
+  policeClearancePhoto?: string;
+  vehiclePhoto?: string;
+  joinedDate?: string;
+  acceptanceRate?: number;
+  completionRate?: number;
+  onTimeRate?: number;
+  ecoCashNumber?: string;
+  bankName?: string;
+  bankAccount?: string;
+  emergencyContact?: { name: string; relation: string; phone: string };
+};
+
+const DRIVER_AVATARS = [
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1534751516642-a1714f3b7d15?w=400&h=400&fit=crop&crop=faces&q=85",
+  "https://images.unsplash.com/photo-1521119989659-a83eee488004?w=400&h=400&fit=crop&crop=faces&q=85",
+];
+
+const VEHICLE_MODELS: Record<string, { model: string; color: string; year: string; image: string }> = {
+  "Courier Bike": { model: "Yamaha YBR 125 Custom", color: "Hexidrop Navy", year: "2023", image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=80" },
+  "Bike": { model: "Honda Ace 125 Delivery", color: "Crimson / Black", year: "2022", image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=500&auto=format&fit=crop&q=80" },
+  "Mini Van": { model: "Nissan NV200 Cargo Van", color: "Frost White", year: "2021", image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&auto=format&fit=crop&q=80" },
+  "Pickup": { model: "Toyota Hilux 2.4 GD-6 Single Cab", color: "Silver Metallic", year: "2023", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&auto=format&fit=crop&q=80" },
+  "Truck": { model: "Isuzu NPR 400 Dropside 4-Ton", color: "Pure White", year: "2022", image: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=500&auto=format&fit=crop&q=80" },
+  "Large Truck": { model: "Mercedes-Benz Atego 1518 8-Ton Box", color: "Midnight Blue", year: "2020", image: "https://images.unsplash.com/photo-1586191582152-ee99a7fd552f?w=500&auto=format&fit=crop&q=80" },
 };
 
 export const DRIVERS: Driver[] = Array.from({ length: 24 }).map((_, i) => {
@@ -156,14 +204,24 @@ export const DRIVERS: Driver[] = Array.from({ length: 24 }).map((_, i) => {
   const base = SUBURB_COORDS[sub] || { lat: -17.825, lng: 31.053 };
   const lat = +(base.lat + seedFloat(i * 3, -0.012, 0.012)).toFixed(5);
   const lng = +(base.lng + seedFloat(i * 3 + 1, -0.012, 0.012)).toFixed(5);
+  const name = pick(DRIVER_NAMES, i);
+  const vehObj = pick(VEHICLES, i);
+  const vMeta = VEHICLE_MODELS[vehObj.type] || VEHICLE_MODELS["Courier Bike"];
+  const avatarUrl = DRIVER_AVATARS[i % DRIVER_AVATARS.length];
 
   return {
     id: `DRV-${1024 + i}`,
-    name: pick(DRIVER_NAMES, i),
+    name,
     phone: `+263 77${(2000000 + i * 1337).toString().slice(0, 7)}`,
+    email: `${name.toLowerCase().replace(" ", ".")}@hexidrop.co.zw`,
     city: "Harare",
-    vehicle: pick(VEHICLES, i).type,
-    plate: pick(VEHICLES, i).plate,
+    address: `${12 + (i * 3) % 45} ${sub} Drive, ${sub}, Harare`,
+    vehicle: vehObj.type,
+    vehicleType: vehObj.type,
+    vehicleModel: vMeta.model,
+    vehicleYear: vMeta.year,
+    vehicleColor: vMeta.color,
+    plate: vehObj.plate,
     rating: +(4 + seedFloat(i, 0, 0.99)).toFixed(2),
     trips: Math.round(seedFloat(i + 2, 80, 1240)),
     earnings: Math.round(seedFloat(i + 5, 320, 4800)),
@@ -172,6 +230,28 @@ export const DRIVERS: Driver[] = Array.from({ length: 24 }).map((_, i) => {
     lat,
     lng,
     currentSuburb: sub,
+    avatar: avatarUrl,
+    driverPhoto: avatarUrl,
+    nationalId: `63-${(280000 + i * 491).toString().slice(0, 6)}-K-${40 + (i % 10)}`,
+    nationalIdPhoto: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80",
+    licenseNumber: `ZW-DL-${(880000 + i * 312).toString().slice(0, 6)}-${i % 2 === 0 ? "B" : "C"}`,
+    licenseClass: vehObj.type.includes("Truck") ? "Class 2 (Commercial Heavy)" : "Class 4 (Light Delivery)",
+    licensePhoto: "https://images.unsplash.com/photo-1554415707-9e44667014f8?w=600&auto=format&fit=crop&q=80",
+    ztsaCertificatePhoto: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=600&auto=format&fit=crop&q=80",
+    policeClearancePhoto: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80",
+    vehiclePhoto: vMeta.image,
+    joinedDate: `${((i % 28) + 1).toString().padStart(2, "0")} ${( ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const )[i % 12]} 2024`,
+    acceptanceRate: +(94 + seedFloat(i, 0, 5.8)).toFixed(1),
+    completionRate: +(97 + seedFloat(i + 1, 0, 2.9)).toFixed(1),
+    onTimeRate: +(95 + seedFloat(i + 2, 0, 4.8)).toFixed(1),
+    ecoCashNumber: `+263 77${(2000000 + i * 1337).toString().slice(0, 7)}`,
+    bankName: i % 2 === 0 ? "Stanbic Bank Zimbabwe" : "CABS Bank",
+    bankAccount: `100-${(482910 + i * 11).toString().slice(0, 6)}-01`,
+    emergencyContact: {
+      name: `Grace ${name.split(" ")[1] || "Moyo"}`,
+      relation: "Next of Kin / Spouse",
+      phone: `+263 77${(9120000 + i * 543).toString().slice(0, 7)}`,
+    },
   };
 });
 

@@ -19,6 +19,7 @@ import Dashboard from "@/pages/admin/Dashboard";
 import OrdersPage from "@/pages/admin/Orders";
 import CustomersPage from "@/pages/admin/Customers";
 import DriversPage from "@/pages/admin/Drivers";
+import DriverDetailsPage from "@/pages/admin/DriverDetails";
 import MoversPage from "@/pages/admin/Movers";
 import VehiclesPage from "@/pages/admin/Vehicles";
 import FleetPage from "@/pages/admin/Fleet";
@@ -95,6 +96,7 @@ export const router = createBrowserRouter([
       { path: "orders", element: <OrdersPage /> },
       { path: "customers", element: <CustomersPage /> },
       { path: "drivers", element: <DriversPage /> },
+      { path: "drivers/:id", element: <DriverDetailsPage /> },
       { path: "movers", element: <MoversPage /> },
       { path: "vehicles", element: <VehiclesPage /> },
       { path: "fleet", element: <FleetPage /> },
