@@ -696,28 +696,37 @@ function Journey() {
 /* ============ STATS ============ */
 function Stats() {
   const stats = [
-    { end: 1_200_000, suffix: "+", label: "Deliveries" },
-    { end: 6_400, suffix: "+", label: "Drivers" },
-    { end: 24, suffix: "", label: "Cities" },
-    { end: 850, suffix: "+", label: "Business partners" },
-    { end: 98, suffix: "%", label: "Customer satisfaction" },
-    { end: 50_000, suffix: "+", label: "Moving jobs" },
+    { target: 1.2, decimals: 1, suffix: "M+", label: "Deliveries", title: "1,200,000+ Total Deliveries" },
+    { target: 6400, decimals: 0, suffix: "+", label: "Active Drivers", title: "6,400+ Vetted Drivers" },
+    { target: 24, decimals: 0, suffix: "", label: "Operating Cities", title: "24 Cities Across Zimbabwe" },
+    { target: 850, decimals: 0, suffix: "+", label: "Business Partners", title: "850+ Corporate & Merchant Partners" },
+    { target: 98, decimals: 0, suffix: "%", label: "Customer Satisfaction", title: "98% Positive Feedback Rate" },
+    { target: 50, decimals: 0, suffix: "K+", label: "Moving Jobs", title: "50,000+ Completed Relocations" },
   ];
   return (
-    <section className="relative overflow-hidden bg-brand-navy py-20 text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.05]"
+    <section className="relative overflow-hidden bg-brand-navy py-16 text-white md:py-20">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
             "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
           backgroundSize: "24px 24px",
         }}
       />
-      <div className="relative mx-auto max-w-7xl px-4 md:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+        <div className="grid grid-cols-2 gap-y-10 gap-x-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6 lg:gap-4 xl:gap-8">
           {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <Counter end={s.end} suffix={s.suffix} />
-              <div className="mt-2 text-[11px] font-bold uppercase tracking-widest text-white/70">
+            <div
+              key={s.label}
+              className="flex min-w-0 flex-col items-center justify-center text-center px-1"
+            >
+              <Counter
+                target={s.target}
+                decimals={s.decimals}
+                suffix={s.suffix}
+                title={s.title}
+              />
+              <div className="mt-2 text-[11px] font-bold uppercase tracking-wider text-white/75 sm:text-xs leading-snug">
                 {s.label}
               </div>
             </div>
@@ -728,10 +737,21 @@ function Stats() {
   );
 }
 
-function Counter({ end, suffix }: { end: number; suffix: string }) {
+function Counter({
+  target,
+  decimals = 0,
+  suffix = "",
+  title,
+}: {
+  target: number;
+  decimals?: number;
+  suffix?: string;
+  title?: string;
+}) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -744,7 +764,7 @@ function Counter({ end, suffix }: { end: number; suffix: string }) {
           const step = (t: number) => {
             const p = Math.min(1, (t - start) / dur);
             const eased = 1 - Math.pow(1 - p, 3);
-            setVal(Math.floor(end * eased));
+            setVal(+(target * eased).toFixed(decimals));
             if (p < 1) requestAnimationFrame(step);
           };
           requestAnimationFrame(step);
@@ -753,10 +773,21 @@ function Counter({ end, suffix }: { end: number; suffix: string }) {
     });
     obs.observe(el);
     return () => obs.disconnect();
-  }, [end]);
-  const formatted = val >= 1000 ? val.toLocaleString() : val.toString();
+  }, [target, decimals]);
+
+  const formatted =
+    decimals > 0
+      ? val.toFixed(decimals)
+      : val >= 1000
+      ? val.toLocaleString()
+      : val.toString();
+
   return (
-    <div ref={ref} className="text-3xl font-extrabold text-primary-glow md:text-5xl">
+    <div
+      ref={ref}
+      title={title}
+      className="text-2xl font-extrabold tracking-tight text-primary-glow tabular-nums sm:text-3xl lg:text-2xl xl:text-3xl 2xl:text-4xl whitespace-nowrap"
+    >
       {formatted}
       {suffix}
     </div>
