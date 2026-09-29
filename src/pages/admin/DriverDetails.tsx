@@ -355,7 +355,7 @@ export function DriverDetailsPage() {
               </div>
 
               {/* Embedded RealMap for Harare */}
-              <div className="relative h-[340px] w-full bg-slate-900">
+              <div className="relative h-[340px] w-full bg-slate-900 isolate overflow-hidden">
                 <RealMap
                   config={mapConfig}
                   center={{ lat: driver.lat, lng: driver.lng }}
@@ -363,6 +363,8 @@ export function DriverDetailsPage() {
                   className="h-full w-full"
                   drivers={[driver]}
                   selectedDriver={driver}
+                  showSelectedCard={false}
+                  showControls={false}
                 />
               </div>
 
@@ -389,28 +391,34 @@ export function DriverDetailsPage() {
                 </Link>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-border/50">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b text-muted-foreground">
-                      <th className="pb-2 font-semibold">Order ID</th>
-                      <th className="pb-2 font-semibold">Customer</th>
-                      <th className="pb-2 font-semibold">Route</th>
-                      <th className="pb-2 font-semibold text-right">Fare</th>
-                      <th className="pb-2 font-semibold">Status</th>
+                    <tr className="border-b bg-muted/40 text-muted-foreground font-semibold">
+                      <th className="py-3 px-4 w-[120px]">Order ID</th>
+                      <th className="py-3 px-4 w-[150px]">Customer</th>
+                      <th className="py-3 px-4">Route</th>
+                      <th className="py-3 px-4 text-right w-[110px]">Fare</th>
+                      <th className="py-3 px-4 text-center w-[130px]">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {recentOrders.map((ord, idx) => (
                       <tr key={ord.id || idx} className="hover:bg-muted/40 transition">
-                        <td className="py-2.5 font-mono font-bold text-primary">{ord.id}</td>
-                        <td className="py-2.5 font-medium text-foreground">{ord.customer}</td>
-                        <td className="py-2.5 text-muted-foreground">
-                          <div className="truncate max-w-[200px]">{ord.pickup} &rarr; {ord.drop}</div>
+                        <td className="py-3 px-4 font-mono font-bold text-primary whitespace-nowrap">{ord.id}</td>
+                        <td className="py-3 px-4 font-semibold text-foreground whitespace-nowrap">{ord.customer}</td>
+                        <td className="py-3 px-4 text-muted-foreground">
+                          <div className="truncate max-w-[280px]" title={`${ord.pickup} → ${ord.drop}`}>
+                            {ord.pickup} &rarr; {ord.drop}
+                          </div>
                         </td>
-                        <td className="py-2.5 text-right font-bold text-foreground">${ord.fare.toFixed(2)}</td>
-                        <td className="py-2.5">
-                          <OrderStatusBadge status={ord.status} />
+                        <td className="py-3 px-4 text-right font-bold text-foreground tabular-nums whitespace-nowrap">
+                          ${ord.fare.toFixed(2)}
+                        </td>
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          <div className="flex justify-center">
+                            <OrderStatusBadge status={ord.status} />
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -802,15 +810,15 @@ export function DriverDetailsPage() {
           {/* Historical Payout Ledger */}
           <div className="rounded-2xl border bg-card p-6 shadow-card space-y-4">
             <h3 className="text-sm font-bold text-foreground">Weekly Payout Ledger</h3>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-border/50">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b text-muted-foreground">
-                    <th className="pb-2.5 font-semibold">Payout Period</th>
-                    <th className="pb-2.5 font-semibold">Reference</th>
-                    <th className="pb-2.5 font-semibold">Method</th>
-                    <th className="pb-2.5 font-semibold text-right">Amount</th>
-                    <th className="pb-2.5 font-semibold">Status</th>
+                  <tr className="border-b bg-muted/40 text-muted-foreground font-semibold">
+                    <th className="py-3 px-4 w-[200px]">Payout Period</th>
+                    <th className="py-3 px-4 w-[150px]">Reference</th>
+                    <th className="py-3 px-4 w-[120px]">Method</th>
+                    <th className="py-3 px-4 text-right w-[120px]">Amount</th>
+                    <th className="py-3 px-4 text-center w-[120px]">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -821,12 +829,16 @@ export function DriverDetailsPage() {
                     { period: "25 Aug - 31 Aug 2026", ref: "ECO-95104-ZW", method: "EcoCash", amount: 388.20, status: "Paid" },
                   ].map((row, idx) => (
                     <tr key={idx} className="hover:bg-muted/30 transition">
-                      <td className="py-3 font-semibold text-foreground">{row.period}</td>
-                      <td className="py-3 font-mono text-muted-foreground">{row.ref}</td>
-                      <td className="py-3 text-muted-foreground">{row.method}</td>
-                      <td className="py-3 text-right font-bold text-foreground">${row.amount.toFixed(2)}</td>
-                      <td className="py-3">
-                        <StatusBadge tone="success" label={row.status} />
+                      <td className="py-3 px-4 font-semibold text-foreground whitespace-nowrap">{row.period}</td>
+                      <td className="py-3 px-4 font-mono text-muted-foreground whitespace-nowrap">{row.ref}</td>
+                      <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">{row.method}</td>
+                      <td className="py-3 px-4 text-right font-bold text-foreground tabular-nums whitespace-nowrap">
+                        ${row.amount.toFixed(2)}
+                      </td>
+                      <td className="py-3 px-4 text-center whitespace-nowrap">
+                        <div className="flex justify-center">
+                          <StatusBadge tone="success" label={row.status} />
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -893,7 +905,7 @@ export function DriverDetailsPage() {
       {/* Image Zoom Preview Modal */}
       {previewImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm animate-in fade-in"
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm animate-in fade-in"
           onClick={() => setPreviewImage(null)}
         >
           <div className="relative max-h-[85vh] max-w-3xl overflow-hidden rounded-2xl bg-black shadow-2xl">

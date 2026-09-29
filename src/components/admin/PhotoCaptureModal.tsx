@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   Camera,
   Upload,
@@ -258,16 +259,16 @@ export function PhotoCaptureModal({
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+        className="fixed inset-0 z-[99999] bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 flex w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-slate-700/60 bg-slate-900 text-white shadow-2xl animate-in zoom-in-95 duration-200">
+      <div className="relative z-[100000] flex w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-slate-700/60 bg-slate-900 text-white shadow-2xl animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-slate-800 px-6 py-5">
           <div className="flex items-center gap-3">
@@ -527,6 +528,7 @@ export function PhotoCaptureModal({
           <span>WebRTC Camera Active</span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

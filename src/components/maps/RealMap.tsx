@@ -50,6 +50,7 @@ export interface RealMapProps {
   height?: string | number;
   className?: string;
   showControls?: boolean;
+  showSelectedCard?: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -241,6 +242,7 @@ export function RealMap({
   height = "720px",
   className = "",
   showControls = true,
+  showSelectedCard = true,
 }: RealMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentZoom, setCurrentZoom] = useState(zoom);
@@ -492,7 +494,7 @@ export function RealMap({
       {/* ==================================================================== */}
 
       {/* Top Left: Selected Driver Callout Card */}
-      {selectedDriver && (
+      {selectedDriver && showSelectedCard && (
         <div className="absolute left-4 top-4 z-[1000] w-[320px] rounded-2xl border bg-card/95 p-4 shadow-elegant backdrop-blur animate-in fade-in slide-in-from-top-2">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
