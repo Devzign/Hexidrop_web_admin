@@ -1,10 +1,11 @@
 import { ReactNode, useEffect } from "react";
-import { useLocation, useNavigate, Outlet } from "react-router-dom";
+import { useLocation, useNavigate, Outlet, ScrollRestoration } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { Sidebar } from "@/components/admin/Sidebar";
 import { Header } from "@/components/admin/Header";
 import { usePermissions, type Module } from "@/lib/permissions";
 import { recordAudit } from "@/lib/audit-log";
+import { ScrollToTop } from "@/components/shared/ScrollToTop";
 
 const ROUTE_MODULE: Record<string, Module> = {
   "/admin": "dashboard",
@@ -76,6 +77,8 @@ export function AdminLayout({ children }: { children?: ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
+      <ScrollRestoration />
+      <ScrollToTop />
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
