@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Clock, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { HexiLogo } from "./Logo";
-import { StoreBadge } from "./StoreBadge";
 
 export function SiteFooter() {
   return (
@@ -13,10 +12,6 @@ export function SiteFooter() {
             Zimbabwe's on-demand delivery & moving network. Bikes, vans, trucks
             and full moving crews — one app, one platform.
           </p>
-          <div className="flex flex-col sm:flex-row md:flex-col items-start gap-2.5 pt-2">
-            <StoreBadge store="apple" />
-            <StoreBadge store="google" />
-          </div>
           <div className="flex gap-3 pt-2">
             {[Facebook, Instagram, Twitter, Linkedin].map((Icon, i) => (
               <a
