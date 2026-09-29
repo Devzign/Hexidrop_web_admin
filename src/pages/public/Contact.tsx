@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import heroFleet from "@/assets/hero-fleet.jpg";
 import iconOffice3D from "@/assets/3d/icon-office-3d.png";
+import { StoreBadge } from "@/components/public/StoreBadge";
 
 
 
@@ -321,12 +322,10 @@ function BusinessCTA() {
               Download the app and book in minutes.
             </h2>
           </div>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-glow transition hover:brightness-105"
-          >
-            Get the app <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <StoreBadge store="apple" />
+            <StoreBadge store="google" />
+          </div>
         </div>
       </div>
     </section>
