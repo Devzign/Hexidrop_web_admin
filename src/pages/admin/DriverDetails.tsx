@@ -35,6 +35,7 @@ import {
   Share2,
   Edit,
   Car,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,7 +60,7 @@ export function DriverDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const mapConfig = useMapConfig();
-  const { driver, savePhoto, toggleKyc, update } = useDriver(id);
+  const { driver, loading, refresh, savePhoto, toggleKyc, update } = useDriver(id);
 
   const [activeTab, setActiveTab] = useState<"overview" | "kyc" | "vehicle" | "earnings" | "activity">("overview");
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
@@ -174,6 +175,20 @@ export function DriverDetailsPage() {
           >
             <ShieldCheck className="h-4 w-4" />
             <span>{driver.verified ? "KYC Approved" : "Approve KYC"}</span>
+          </button>
+
+          {/* Sync Button */}
+          <button
+            onClick={() => {
+              refresh();
+              toast.info("Syncing driver profile with live database...");
+            }}
+            disabled={loading}
+            className="flex h-9 items-center gap-1.5 rounded-xl border bg-card px-3 text-xs font-semibold text-foreground hover:bg-accent transition shadow-sm disabled:opacity-50"
+            title="Refresh driver data from live database"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-primary" : ""}`} />
+            <span className="hidden sm:inline">Sync</span>
           </button>
 
           {/* Edit Driver Details */}
