@@ -20,6 +20,7 @@ import {
   Phone,
   Truck,
   ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,7 +40,7 @@ const DRIVER_FIELDS: FieldDef<Driver>[] = [
 
 export function DriversPage() {
   const navigate = useNavigate();
-  const { drivers, updateDriver, updateDriverPhoto, deleteDriver, createDriver } = useDrivers();
+  const { drivers, loading, refresh, updateDriver, updateDriverPhoto, deleteDriver, createDriver } = useDrivers();
 
   // Search & filter state
   const [search, setSearch] = useState("");
@@ -231,6 +232,18 @@ export function DriversPage() {
         subtitle={`${drivers.length} drivers onboarded · ${online} active on Harare routes`}
         actions={
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                refresh();
+                toast.info("Syncing fleet data with live database...");
+              }}
+              disabled={loading}
+              className="flex h-9 items-center gap-1.5 rounded-xl border bg-card px-3 text-sm font-medium hover:bg-accent transition shadow-sm disabled:opacity-50"
+              title="Sync fleet with live backend database"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin text-primary" : ""}`} />
+              <span className="hidden sm:inline">Sync Fleet</span>
+            </button>
             <button className="flex h-9 items-center gap-1.5 rounded-xl border bg-card px-3 text-sm font-medium hover:bg-accent transition shadow-sm">
               <Download className="h-4 w-4" /> Export
             </button>

@@ -167,10 +167,100 @@ export const api = {
     get: async (id: number | string) => {
       return apiRequest<{ success: boolean; data: any }>(`/admin/drivers/${id}`);
     },
-    updateStatus: async (id: number | string, status: string) => {
+    create: async (data: Record<string, any>) => {
+      return apiRequest<{ success: boolean; data: any; message?: string }>(
+        "/admin/drivers",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        },
+      );
+    },
+    update: async (id: number | string, data: Record<string, any>) => {
+      return apiRequest<{ success: boolean; data: any; message?: string }>(
+        `/admin/drivers/${id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(data),
+        },
+      );
+    },
+    delete: async (id: number | string) => {
+      return apiRequest<{ success: boolean; message?: string }>(
+        `/admin/drivers/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
+    },
+    uploadPhoto: async (id: number | string, photo: string | File) => {
+      if (typeof photo === "string") {
+        return apiRequest<{ success: boolean; data: { driver_id: number; avatar_url: string } }>(
+          `/admin/drivers/${id}/photo`,
+          {
+            method: "POST",
+            body: JSON.stringify({ photo }),
+          },
+        );
+      }
+      const formData = new FormData();
+      formData.append("photo", photo);
+      return apiRequest<{ success: boolean; data: { driver_id: number; avatar_url: string } }>(
+        `/admin/drivers/${id}/photo`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+    },
+    uploadDocument: async (
+      id: number | string,
+      data: { type: string; file?: File; file_url?: string; data_url?: string; expiry_date?: string },
+    ) => {
+      if (data.file) {
+        const formData = new FormData();
+        formData.append("type", data.type);
+        formData.append("file", data.file);
+        if (data.expiry_date) formData.append("expiry_date", data.expiry_date);
+        return apiRequest<{ success: boolean; data: any }>(
+          `/admin/drivers/${id}/documents`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
+      }
+      return apiRequest<{ success: boolean; data: any }>(
+        `/admin/drivers/${id}/documents`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        },
+      );
+    },
+    verifyDocument: async (id: number | string, docIdentifier: string | number) => {
+      return apiRequest<{ success: boolean; data: any }>(
+        `/admin/drivers/${id}/documents/${docIdentifier}/verify`,
+        { method: "PUT" },
+      );
+    },
+    rejectDocument: async (
+      id: number | string,
+      docIdentifier: string | number,
+      reason: string,
+    ) => {
+      return apiRequest<{ success: boolean; data: any }>(
+        `/admin/drivers/${id}/documents/${docIdentifier}/reject`,
+        {
+          method: "PUT",
+          body: JSON.stringify({ reason }),
+        },
+      );
+    },
+    updateStatus: async (id: number | string, status: string, is_online?: boolean) => {
       return apiRequest(`/admin/drivers/${id}/status`, {
         method: "PUT",
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, ...(is_online !== undefined ? { is_online } : {}) }),
       });
     },
     verify: async (id: number | string) => {
@@ -180,6 +270,18 @@ export const api = {
       return apiRequest(`/admin/drivers/${id}/reject`, {
         method: "POST",
         body: JSON.stringify({ reason }),
+      });
+    },
+    assignVehicle: async (id: number | string, vehicleData: Record<string, any>) => {
+      return apiRequest(`/admin/drivers/${id}/assign-vehicle`, {
+        method: "POST",
+        body: JSON.stringify(vehicleData),
+      });
+    },
+    updateCommission: async (id: number | string, commission_percent: number) => {
+      return apiRequest(`/admin/drivers/${id}/commission`, {
+        method: "PUT",
+        body: JSON.stringify({ commission_percent }),
       });
     },
     getPending: async () => {
